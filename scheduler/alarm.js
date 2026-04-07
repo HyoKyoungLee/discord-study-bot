@@ -33,14 +33,13 @@ function buildStartEmbed(dateStr, quote) {
     );
 }
 
-function buildEndEmbed(dateStr, quote) {
+function buildEndEmbed(dateStr) {
   return new EmbedBuilder()
     .setColor(0x95a5a6)
     .setDescription(
       `@everyone\n\n` +
       `🏁 ${dateStr} 스터디가 종료됐어요!\n` +
-      `📋 \`/출석기록\` 으로 오늘 기록을 확인해보세요.` +
-      quoteField(quote)
+      `📋 \`/출석기록\` 으로 오늘 기록을 확인해보세요.`
     );
 }
 
@@ -54,10 +53,10 @@ function registerAlarms(client) {
           return;
         }
         const dateStr = getKstDateString();
-        const quote = await fetchQuote();
+        const quote = schedule.label === '시작' ? await fetchQuote() : null;
         const embed = schedule.label === '시작'
           ? buildStartEmbed(dateStr, quote)
-          : buildEndEmbed(dateStr, quote);
+          : buildEndEmbed(dateStr);
 
         await channel.send({ content: '@everyone', embeds: [embed] });
         console.log(`[alarm] ${schedule.label} 알람 발송 완료`);
