@@ -10,9 +10,11 @@ const client = new Client({
 
 const handleVoiceStateUpdate = require("./handlers/voiceStateUpdate");
 const attendance = require("./commands/attendance");
+const { registerAlarms } = require("./scheduler/alarm");
 
 client.once("ready", () => {
   console.log(`✅ 봇 로그인 성공: ${client.user.tag}`);
+  registerAlarms(client);
 });
 
 client.on("voiceStateUpdate", handleVoiceStateUpdate);
