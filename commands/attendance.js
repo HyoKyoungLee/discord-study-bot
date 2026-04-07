@@ -283,4 +283,4 @@ async function execute(interaction) {
   }
 }
 
-module.exports = { data, execute };
+module.exports = { data, execute, buildEmbed };
