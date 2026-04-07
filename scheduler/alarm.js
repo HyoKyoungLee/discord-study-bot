@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const { EmbedBuilder } = require('discord.js');
 const { ALARM_CHANNEL_ID, ALARM_SCHEDULES } = require('../config');
+const { fetchQuote } = require('../utils/quote');
 
 const DAYS_KO = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -15,24 +16,31 @@ function getKstDateString() {
   return `${year}년 ${month}월 ${day}일 ${dow}요일`;
 }
 
-function buildStartEmbed(dateStr) {
+function quoteField(quote) {
+  if (!quote) return '';
+  return `\n\n💬 오늘의 명언\n"${quote.message}" — ${quote.author}`;
+}
+
+function buildStartEmbed(dateStr, quote) {
   return new EmbedBuilder()
     .setColor(0x3498db)
     .setDescription(
       `@everyone\n\n` +
       `📅 ${dateStr} 저녁 8시에요!\n` +
       `🤓 오늘도 함께 공부해봐요!\n` +
-      `🖥️ 화면공유 또는 캠을 켜주세요~`
+      `🖥️ 화면공유 또는 캠을 켜주세요~` +
+      quoteField(quote)
     );
 }
 
-function buildEndEmbed(dateStr) {
+function buildEndEmbed(dateStr, quote) {
   return new EmbedBuilder()
     .setColor(0x95a5a6)
     .setDescription(
       `@everyone\n\n` +
       `🏁 ${dateStr} 스터디가 종료됐어요!\n` +
-      `📋 \`/출석기록\` 으로 오늘 기록을 확인해보세요.`
+      `📋 \`/출석기록\` 으로 오늘 기록을 확인해보세요.` +
+      quoteField(quote)
     );
 }
 
@@ -46,9 +54,10 @@ function registerAlarms(client) {
           return;
         }
         const dateStr = getKstDateString();
+        const quote = await fetchQuote();
         const embed = schedule.label === '시작'
-          ? buildStartEmbed(dateStr)
-          : buildEndEmbed(dateStr);
+          ? buildStartEmbed(dateStr, quote)
+          : buildEndEmbed(dateStr, quote);
 
         await channel.send({ content: '@everyone', embeds: [embed] });
         console.log(`[alarm] ${schedule.label} 알람 발송 완료`);
