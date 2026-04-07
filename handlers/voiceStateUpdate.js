@@ -9,7 +9,8 @@ module.exports = function handleVoiceStateUpdate(oldState, newState) {
   const channelId = newState.channelId ?? oldState.channelId;
   if (channelId !== TARGET_VOICE_CHANNEL_ID) return;
 
-  const { id: discordUserId, username } = newState.member.user;
+  const discordUserId = newState.member.user.id;
+  const username = newState.member.displayName;
 
   // 변화 감지
   const camChanged = oldState.selfVideo !== newState.selfVideo;
