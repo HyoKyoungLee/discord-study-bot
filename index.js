@@ -8,9 +8,13 @@ const client = new Client({
   ],
 });
 
+const handleVoiceStateUpdate = require('./handlers/voiceStateUpdate');
+
 client.once('ready', () => {
   console.log(`✅ 봇 로그인 성공: ${client.user.tag}`);
 });
+
+client.on('voiceStateUpdate', handleVoiceStateUpdate);
 
 client.on('error', (error) => {
   console.error('Discord 클라이언트 에러:', error);
