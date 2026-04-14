@@ -7,8 +7,7 @@ const DAYS_KO = ['일', '월', '화', '수', '목', '금', '토'];
 
 /** KST 기준 현재 날짜 문자열 생성: "2026년 4월 7일 월요일" */
 function getKstDateString() {
-  const now = new Date();
-  now.setHours(now.getHours() + 9);
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
   const year  = now.getFullYear();
   const month = now.getMonth() + 1;
   const day   = now.getDate();
