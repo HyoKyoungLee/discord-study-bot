@@ -83,8 +83,6 @@ function parseEvents(logs, eventType) {
         totalMinutes += mins;
         lines.push(`∙ ${toKstTime(e.timestamp)} OFF (${formatDuration(mins)})`);
         lastOnKst = null;
-      } else {
-        lines.push(`∙ ${toKstTime(e.timestamp)} OFF`);
       }
     }
   }
