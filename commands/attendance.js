@@ -90,7 +90,7 @@ function parseEvents(logs, eventType) {
   // 종료 이벤트 없이 스터디 종료된 경우 — 22:00 KST 기준으로 마감
   if (lastOnKst) {
     const studyEnd = new Date(lastOnKst);
-    studyEnd.setHours(STUDY_END_HOUR, 0, 0, 0);
+    studyEnd.setUTCHours(STUDY_END_HOUR, 0, 0, 0); // setHours는 로컬 타임존 기준이라 KST 서버에서 오작동
     if (lastOnKst < studyEnd) {
       const mins = diffMinutes(lastOnKst, studyEnd);
       totalMinutes += mins;
@@ -129,7 +129,7 @@ function calcAbsent(logs, dateStr) {
   );
 
   for (const e of sorted) {
-    const t = toKstDate(e.timestamp);
+    const t = new Date(e.timestamp.replace(" ", "T") + "Z"); // 원시 UTC로 비교 (studyStart/End도 UTC 기준)
     if (t < studyStart || t > studyEnd) continue;
 
     const wasOff = !camOn && !screenOn;
