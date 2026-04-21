@@ -118,18 +118,25 @@ function calcAbsent(logs, dateStr) {
     `${dateStr}T${String(STUDY_END_HOUR).padStart(2, "0")}:00:00+09:00`,
   );
 
-  // 이벤트를 시간순으로 처리하며 cam/screen 상태 시뮬레이션
-  let camOn = false;
-  let screenOn = false;
-  let bothOffSince = studyStart; // 초기: 둘 다 꺼진 상태로 시작
-  let absentMinutes = 0;
-
   const sorted = [...logs].sort(
     (a, b) => new Date(a.timestamp + "Z") - new Date(b.timestamp + "Z"),
   );
 
+  // 스터디 시작 전 이벤트로 초기 상태 결정
+  let camOn = false;
+  let screenOn = false;
   for (const e of sorted) {
-    const t = new Date(e.timestamp.replace(" ", "T") + "Z"); // 원시 UTC로 비교 (studyStart/End도 UTC 기준)
+    const t = new Date(e.timestamp.replace(" ", "T") + "Z");
+    if (t >= studyStart) break;
+    if (e.event_type === "cam") camOn = e.action === "on";
+    if (e.event_type === "screen") screenOn = e.action === "on";
+  }
+
+  let bothOffSince = camOn || screenOn ? null : studyStart;
+  let absentMinutes = 0;
+
+  for (const e of sorted) {
+    const t = new Date(e.timestamp.replace(" ", "T") + "Z");
     if (t < studyStart || t > studyEnd) continue;
 
     const wasOff = !camOn && !screenOn;
